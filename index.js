@@ -1,6 +1,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken')
 const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
@@ -32,9 +33,15 @@ async function run() {
 
         //Collections
         const userCollection = client.db('hexa').collection('users');
+        const blogCollection = client.db('hexa').collection('blog');
 
         // user related api
         app.get('/users', async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result);
+        })
+
+        app.get('/allUsers', async (req, res) => {
             const result = await userCollection.find().toArray();
             res.send(result);
         })
@@ -52,9 +59,9 @@ async function run() {
 
         //blog related api
         app.post('/blogs', async (req, res) => {
-            const event = req.body;
-            console.log(event);
-            const result = await eventCollection.insertOne(event);
+            const blog = req.body;
+            console.log(blog);
+            const result = await blogCollection.insertOne(blog);
             res.send(result);
         });
 
