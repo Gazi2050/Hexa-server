@@ -133,12 +133,24 @@ async function run() {
 
 
         //blog related api
+        app.get('/blogs', async (req, res) => {
+            const result = await blogCollection.find().toArray();
+            res.send(result);
+        })
+
         app.post('/blogs', async (req, res) => {
             const blog = req.body;
             console.log(blog);
             const result = await blogCollection.insertOne(blog);
             res.send(result);
         });
+
+        app.delete('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await blogCollection.deleteOne(query);
+            res.send(result);
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
@@ -153,7 +165,8 @@ run().catch(console.dir);
 app.get('/', (req, res) => {
     res.send(`
     <h1 style="text-align:center;font-family:Monospace;">Hexa Server Is Running...</h1>
-    <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/users'>users</a></h2>`)
+    <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/users'>users</a></h2>
+    <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/blogs'>blogs</a></h2>`)
 })
 
 app.listen(port, () => {
