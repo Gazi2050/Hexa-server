@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken')
@@ -85,6 +85,22 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+
+            // if (email !== req.decoded.email) {
+            //     return res.status(403).send({ message: 'forbidden access' })
+            // }
+
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            let admin = false;
+            if (user) {
+                admin = user?.role === 'admin';
+            }
+            res.send({ admin });
+        })
+
         app.post('/users', async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
@@ -95,6 +111,26 @@ async function run() {
             const result = await userCollection.insertOne(user);
             res.send(result);
         })
+
+        app.patch('/users/admin/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                },
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
+
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
+        })
+
 
         //blog related api
         app.post('/blogs', async (req, res) => {
