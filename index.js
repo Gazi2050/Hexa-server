@@ -133,8 +133,14 @@ async function run() {
 
 
         //blog related api
+
         app.get('/blogs', async (req, res) => {
-            const result = await blogCollection.find().toArray();
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await blogCollection.find(query).toArray();
             res.send(result);
         })
 
