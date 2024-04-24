@@ -13,8 +13,6 @@ app.use(cors({
 app.use(express.json());
 
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qemc4ul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qemc4ul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -28,7 +26,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-
 
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
@@ -193,6 +190,42 @@ async function run() {
             const result = await blogCollection.deleteOne(query);
             res.send(result);
         })
+
+        // Vote (upvote or downvote) for a blog
+        app.put('/upVote/:id', async (req, res) => {
+            const id = req.params.id;
+            const blog = req.body;
+            // console.log(id, blog);
+            const filter = { _id: new ObjectId(id) }
+            const blogData = await blogCollection.findOne(filter);
+            const updateBlog = {};
+            const option = { upsert: true };
+            // Remove email from downVote array if present
+            if (blogData.downVote && blogData.downVote.some(vote => vote.email === blog.email)) {
+                updateBlog.$pull = { downVote: { email: blog.email } };
+            }
+            // Add email to upVote array
+            updateBlog.$addToSet = { upVote: { email: blog.email } };
+            const result = await blogCollection.updateOne(filter, updateBlog, option);
+            res.send(result)
+        })
+        app.put('/downVote/:id', async (req, res) => {
+            const id = req.params.id;
+            const blog = req.body;
+            // console.log(id, blog);
+            const filter = { _id: new ObjectId(id) }
+            const blogData = await blogCollection.findOne(filter);
+            const updateBlog = {};
+            const option = { upsert: true };
+            if (blogData.upVote && blogData.upVote.some(vote => vote.email === blog.email)) {
+                updateBlog.$pull = { upVote: { email: blog.email } };
+            }
+            // Add email to downVote array
+            updateBlog.$addToSet = { downVote: { email: blog.email } };
+            const result = await blogCollection.updateOne(filter, updateBlog, option);
+            res.send(result)
+        })
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
