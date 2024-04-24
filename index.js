@@ -13,6 +13,8 @@ app.use(cors({
 app.use(express.json());
 
 
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qemc4ul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qemc4ul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -46,11 +48,11 @@ async function run() {
         const verifyToken = (req, res, next) => {
             // console.log('inside verify token', req.headers.authorization);
             if (!req.headers.authorization) {
-                console.log("No token");
+                // console.log("No token");
                 return res.status(401).send({ message: 'unauthorized access' });
             }
             const token = req.headers.authorization.split(' ')[1];
-            console.log('got the token', token);
+            // console.log('got the token', token);
             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
                 if (err) {
                     return res.status(401).send({ message: 'unauthorized access' })
@@ -135,7 +137,7 @@ async function run() {
         //blog related api
 
         app.get('/blogs', async (req, res) => {
-            console.log(req.query.email);
+            // console.log(req.query.email);
             let query = {};
             if (req.query?.email) {
                 query = { email: req.query.email }
@@ -153,7 +155,7 @@ async function run() {
 
         app.post('/blogs', async (req, res) => {
             const blog = req.body;
-            console.log(blog);
+            // console.log(blog);
             const result = await blogCollection.insertOne(blog);
             res.send(result);
         });
@@ -161,7 +163,7 @@ async function run() {
         app.put('/blogs/:id', async (req, res) => {
             const id = req.params.id;
             const blog = req.body;
-            console.log(id, blog);
+            // console.log(id, blog);
             const filter = { _id: new ObjectId(id) }
             const option = { upsert: true }
             const updateBlog = {
