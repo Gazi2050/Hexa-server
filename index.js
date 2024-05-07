@@ -237,11 +237,17 @@ async function run() {
 }
 run().catch(console.dir);
 
+// app.get('/', (req, res) => {
+//     res.send(`
+//     <h1 style="text-align:center;font-family:Monospace;">Hexa Server Is Running...</h1>
+//     <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/users'>users</a></h2>
+//     <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/blogs'>blogs</a></h2>`)
+// })
 app.get('/', (req, res) => {
     res.send(`
     <h1 style="text-align:center;font-family:Monospace;">Hexa Server Is Running...</h1>
-    <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/users'>users</a></h2>
-    <h2 style="text-align:center;font-family:Monospace;"><a href='http://localhost:5000/blogs'>blogs</a></h2>`)
+    <h2 style="text-align:center;font-family:Monospace;"><a href='https://hexa-server.vercel.app/users'>users</a></h2>
+    <h2 style="text-align:center;font-family:Monospace;"><a href='https://hexa-server.vercel.app/blogs'>blogs</a></h2>`)
 })
 
 app.listen(port, () => {
