@@ -74,12 +74,12 @@ async function run() {
 
 
         // user related api
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyToken, async (req, res) => {
             const result = await userCollection.find().toArray();
             res.send(result);
         })
 
-        app.get('/allUsers', async (req, res) => {
+        app.get('/allUsers', verifyToken, verifyAdmin, async (req, res) => {
             const result = await userCollection.find().toArray();
             res.send(result);
         })
@@ -111,7 +111,7 @@ async function run() {
             res.send(result);
         })
 
-        app.patch('/users/admin/:id', async (req, res) => {
+        app.patch('/users/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updatedDoc = {
@@ -123,7 +123,7 @@ async function run() {
             res.send(result);
         })
 
-        app.delete('/users/:id', async (req, res) => {
+        app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await userCollection.deleteOne(query);
@@ -184,7 +184,7 @@ async function run() {
             const result = await blogCollection.deleteOne(query);
             res.send(result);
         })
-        app.delete('/allBlogs/:id', async (req, res) => {
+        app.delete('/allBlogs/:id', verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await blogCollection.deleteOne(query);
